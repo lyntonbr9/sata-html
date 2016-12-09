@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min-beautifier.js"></script>
+    <script src="bootstrap-table.min-beautifier.js"></script>
+    <link href="bootstrap-table.min-beautifier.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+		var jsonBID;
+		var jsonASK;
+		
+		function getOfertas() {
+			var ativo = $('#COD_ATIVO').val();
+			var url = 'https://mdgateway03.easynvest.com.br/iwg/snapshot/?t=webgateway&c=141793&q=' + ativo.toUpperCase() + ',29,0,10';
+			$.ajax(url, {
+				success: function(data) {
+					jsonBID = data.Value[0].Bk.Bd;
+					jsonASK = data.Value[0].Bk.Ak;
+					createTables();
+				},
+				error: function() {
+					alert('erro ao recuperar as ofertas');
+				}
+			});
+		}
+		
+		function createTables() {
+			$('#BID_OFERTA_COMPRA').bootstrapTable('destroy');
+			$('#BID_OFERTA_COMPRA').bootstrapTable({
+				//Assigning data to table
+				data: jsonBID
+			});
+			
+			$('#BID_OFERTA_VENDA').bootstrapTable('destroy');
+			$('#BID_OFERTA_VENDA').bootstrapTable({
+				//Assigning data to table
+				data: jsonASK
+			});
+		}
+		
+        $(document).ready(function () {
+			$('#COD_ATIVO').keypress(function(event){
+				var keycode = (event.keyCode ? event.keyCode : event.which);
+				if(keycode == '13'){
+					getOfertas();
+				}
+			});
+        });
+    </script>
+</head>
+<body>
+	<input type="text" id="COD_ATIVO"></input>
+	<input type="button" value="buscar" onclick="getOfertas();"></input>
+	<br/><br/>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>COMPRA</th>
+				<th>VENDA</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				<table id="BID_OFERTA_COMPRA">
+					<thead>
+						<tr>
+							<th data-field="DT">DT</th>
+							<th data-field="B">Corretora</th>
+							<th data-field="Q">Quantidade</th>
+							<th data-field="P">Preco</th>
+						</tr>
+					</thead>
+				</table>
+			</td>
+			<td>
+				<table id="BID_OFERTA_VENDA">
+					<thead>
+						<tr>
+							<th data-field="P">Preco</th>
+							<th data-field="Q">Quantidade</th>
+							<th data-field="B">Corretora</th>
+							<th data-field="DT">DT</th>
+						</tr>
+					</thead>
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
