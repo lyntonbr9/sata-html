@@ -1,0 +1,191 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min-beautifier.js"></script>
+    <script src="bootstrap-table.min-beautifier.js"></script>
+	<script src="black-scholes/black-scholes.js"></script>
+    <link href="bootstrap-table.min-beautifier.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+		var jsonBID;
+		var jsonASK;
+		
+		function getOfertas() {
+			var ativo = $('#COD_ATIVO').val();
+			var url = 'https://mdgateway03.easynvest.com.br/iwg/snapshot/?t=webgateway&c=141793&q=' + ativo.toUpperCase() + ',29,0,10';
+			$.ajax(url, {
+				success: function(data) {
+					jsonBID = data.Value[0].Bk.Bd;
+					jsonASK = data.Value[0].Bk.Ak;
+					createTables();
+				},
+				error: function() {
+					alert('erro ao recuperar as ofertas');
+				}
+			});
+		}
+		
+		function createTables() {
+			$('#BID_OFERTA_COMPRA').bootstrapTable('destroy');
+			$('#BID_OFERTA_COMPRA').bootstrapTable({
+				//Assigning data to table
+				data: jsonBID
+			});
+			
+			$('#BID_OFERTA_VENDA').bootstrapTable('destroy');
+			$('#BID_OFERTA_VENDA').bootstrapTable({
+				//Assigning data to table
+				data: jsonASK
+			});
+		}
+		
+		function getPrecoOpcao() {
+			var pa = $('#PRECO_ATIVO').val();
+			var strike = $('#STRIKE').val();
+			var daysInYears = bs.getDaysInYears($('#QTD_DIAS').val());
+			$('#QTD_DIAS_EM_ANOS').val(daysInYears);
+			var volat = ($('#VOLAT').val()/100);
+			var txjuros = ($('#TX_JUROS').val()/100);
+			var tipoOpcao = $('#TIPO_OPCAO').val();
+			
+			var precoOpcao = bs.blackScholes(pa, strike, daysInYears, volat, txjuros, tipoOpcao);
+			$('#PRECO_OPCAO').val(precoOpcao);
+			$('#DELTA').val(bs.getDelta(pa, strike, daysInYears, volat, txjuros, tipoOpcao));
+			$('#GAMMA').val(bs.getGamma(pa, strike, daysInYears, volat, txjuros));
+			$('#THETA').val(bs.getTheta(pa, strike, daysInYears, volat, txjuros, tipoOpcao));
+			$('#VEGA').val(bs.getVega(pa, strike, daysInYears, volat, txjuros)*100);
+			$('#RHO').val(bs.getRho(pa, strike, daysInYears, volat, txjuros, tipoOpcao)*100);
+		}
+		
+        $(document).ready(function () {
+			$('#COD_ATIVO').keypress(function(event){
+				var keycode = (event.keyCode ? event.keyCode : event.which);
+				if(keycode == '13'){
+					getOfertas();
+				}
+			});
+        });
+    </script>
+</head>
+<body>
+	<input type="text" id="COD_ATIVO"></input>
+	<input type="button" value="buscar" onclick="getOfertas();"></input>
+	<br/><br/>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>COMPRA</th>
+				<th>VENDA</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				<table id="BID_OFERTA_COMPRA">
+					<thead>
+						<tr>
+							<th data-field="DT">DT</th>
+							<th data-field="B">Corretora</th>
+							<th data-field="Q">Quantidade</th>
+							<th data-field="P">Preco</th>
+						</tr>
+					</thead>
+				</table>
+			</td>
+			<td>
+				<table id="BID_OFERTA_VENDA">
+					<thead>
+						<tr>
+							<th data-field="P">Preco</th>
+							<th data-field="Q">Quantidade</th>
+							<th data-field="B">Corretora</th>
+							<th data-field="DT">DT</th>
+						</tr>
+					</thead>
+				</table>
+			</td>
+		</tr>
+	</table>
+	<br/><br/>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Black & Scholes</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				Preço Ativo: <input type="text" id="PRECO_ATIVO"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Strike: <input type="text" id="STRIKE"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Qtd Dias: <input type="text" id="QTD_DIAS"></input> Em anos: <input type="text" id="QTD_DIAS_EM_ANOS"></input>
+				
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Volatilidade: <input type="text" id="VOLAT"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Taxa Juros: <input type="text" id="TX_JUROS" value="14"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Tipo Opção: <input type="text" id="TIPO_OPCAO" value="put"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Preço Opção: <input type="text" id="PRECO_OPCAO"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="button" value="Calcular Preço" onclick="getPrecoOpcao();"></input>
+			</td>
+		</tr>
+	</table>
+	<br/>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Greeks</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				DELTA: <input type="text" id="DELTA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				GAMMA: <input type="text" id="GAMMA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				THETA: <input type="text" id="THETA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				VEGA: <input type="text" id="VEGA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				RHO: <input type="text" id="RHO"></input>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
