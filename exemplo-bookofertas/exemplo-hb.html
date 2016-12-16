@@ -4,6 +4,7 @@
     <script src="jquery.min.js"></script>
     <script src="bootstrap.min-beautifier.js"></script>
     <script src="bootstrap-table.min-beautifier.js"></script>
+	<script src="black-scholes.js"></script>
     <link href="bootstrap-table.min-beautifier.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
 		var jsonBID;
@@ -36,6 +37,8 @@
 				//Assigning data to table
 				data: jsonASK
 			});
+			$('#PRECO_OPCAO_COMPRA').val(jsonBID[0].P);
+			$('#PRECO_OPCAO_VENDA').val(jsonASK[0].P);			
 		}
 		
         $(document).ready(function () {
@@ -46,6 +49,22 @@
 				}
 			});
         });
+		
+		function getVolatilidade() {
+			var pa = $('#PRECO_ATIVO').val();
+			var strike = $('#STRIKE').val();
+			var daysInYears = bs.getDaysInYears($('#QTD_DIAS').val());
+			$('#QTD_DIAS_EM_ANOS').val(daysInYears);
+			var precoOpcaoCompra = $('#PRECO_OPCAO_COMPRA').val();
+			var precoOpcaoVenda = $('#PRECO_OPCAO_VENDA').val();
+			var txjuros = ($('#TX_JUROS').val()/100);
+			var tipoOpcao = $('#TIPO_OPCAO').val();
+			var volatilidadeCompra = bs.getVolatility(pa, strike, daysInYears, txjuros, precoOpcaoCompra, tipoOpcao);
+			var volatilidadeVenda = bs.getVolatility(pa, strike, daysInYears, txjuros, precoOpcaoVenda, tipoOpcao);
+			$('#VOLAT_BID').val(volatilidadeCompra*100);
+			$('#VOLAT_ASK').val(volatilidadeVenda*100);
+		}
+		
     </script>
 </head>
 <body>
@@ -85,6 +104,91 @@
 				</table>
 			</td>
 		</tr>
+	</table>
+	<br/>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Greeks</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>
+				VOLAT. COMPRA: <input type="text" id="VOLAT_BID"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				VOLAT. VENDA: <input type="text" id="VOLAT_ASK"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Preço Opcao Compra: <input type="text" id="PRECO_OPCAO_COMPRA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Preço Opcao Venda: <input type="text" id="PRECO_OPCAO_VENDA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Preço Ativo: <input type="text" id="PRECO_ATIVO"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Strike: <input type="text" id="STRIKE"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Qtd Dias: <input type="text" id="QTD_DIAS"></input> Em anos: <input type="text" id="QTD_DIAS_EM_ANOS"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Taxa Juros: <input type="text" id="TX_JUROS" value="13.75"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Tipo Opção: <input type="text" id="TIPO_OPCAO" value="put"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="button" value="Calcular Volatilidade" onclick="getVolatilidade();"></input>
+			</td>
+		</tr>
+		<!--
+		<tr>
+			<td>
+				DELTA: <input type="text" id="DELTA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				GAMMA: <input type="text" id="GAMMA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				THETA: <input type="text" id="THETA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				VEGA: <input type="text" id="VEGA"></input>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				RHO: <input type="text" id="RHO"></input>
+			</td>
+		</tr>
+		-->
 	</table>
 </body>
 </html>
