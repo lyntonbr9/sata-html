@@ -79,6 +79,31 @@ if (!bs) {
 			}
 			return price;
 		},
+		
+		/**
+		 * Calculate the volatility of a price option.
+		 *
+		 * @param   {Number} s       Current price of the underlying
+		 * @param   {Number} k       Strike price
+		 * @param   {Number} t       Time to expiration in years
+		 * @param   {Number} r       Anual risk-free interest rate as a decimal
+		 * @param   {Number} op      Current price of the option
+		 * @param   {String} callPut The type of option to be priced - "call" or "put"
+		 * @returns {Number}         Volatility of the price option
+		 */
+		getVolatility: function (s, k, t, r, op, callPut) {
+			var lowerDiff = Number.POSITIVE_INFINITY;
+			var finalVolatility = 0.0;
+			for (v = 0.0; v < 1.0; v += 0.01) {
+				var bsOP = this.blackScholes(s, k, t, v, r, callPut);
+				var diff = Math.abs((bsOP - op) / op);
+				if (diff < lowerDiff) {
+					lowerDiff = diff;
+					finalVolatility = v;
+				}
+			}
+			return finalVolatility;
+		},
 
 		/**
 		 * Calculate omega as defined in the Black-Scholes formula.
