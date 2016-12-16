@@ -1,3 +1,6 @@
+/**
+ * Implementacao do BLACK-SCHOLES sem considerar o Dividend Yeld (ganho com os dividendos).
+ */
 if (!bs) {
 	var bs = {
 		/**
@@ -67,7 +70,7 @@ if (!bs) {
 		 */
 		blackScholes: function (s, k, t, v, r, callPut) {
 			var price = null;
-			var w = (r * t + Math.pow(v, 2) * t / 2 - Math.log(k / s)) / (v * Math.sqrt(t));
+			var w = this.getW(s, k, t, v, r);
 			if (callPut === "call") {
 				price = s * this.stdNormCDF(w) - k * Math.pow(Math.E, -1 * r * t) * this.stdNormCDF(w - v * Math.sqrt(t));
 			} else // put
@@ -88,7 +91,7 @@ if (!bs) {
 		 * @returns {Number} The value of omega
 		 */
 		getW: function (s, k, t, v, r) {
-			var w = (r * t + Math.pow(v, 2) * t / 2 - Math.log(k / s)) / (v * Math.sqrt(t));
+			var w = (Math.log(s / k) + r * t + Math.pow(v, 2) * t / 2) / (v * Math.sqrt(t));
 			return w;
 		},
 	
