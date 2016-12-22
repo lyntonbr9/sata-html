@@ -1,0 +1,30 @@
+<!-- Declares the root element that allows behaviour to be modified through Angular custom HTML tags. -->
+<html ng-app="persons">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title></title>
+	<link rel="stylesheet" type="text/css" href="bootstrap.css"/>
+    <script src="angular.js"></script>
+    <script src="jquery.js"></script>
+    <script src="personApp.js"></script>
+</head>
+ 
+<body>
+ 
+<br>
+ 
+<div class="grid">
+    <!-- Specify a JavaScript controller script that binds Javascript variables to the HTML.-->
+    <div ng-controller="personsList">
+		<ul class="example-animate-container">
+			<li class="animate-repeat" ng-repeat="person in persons">
+				Nome: {{person.name}}
+				<input type="text" class="form-control" name="nome" ng-model="person.name">
+				<button ng-click="executar(person.name, $index)">Exec</button>
+			</li>
+		</ul>
+    </div>
+</div>
+ 
+</body>
+</html>
