@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+	<link rel="stylesheet" href="bootstrap_3.3.7.css" />
+	<link rel="stylesheet" href="bootstrap-theme_3.3.7.css" />
+	<script src="angular_1.6.1.js"></script>
+	<script src="app.js"></script>
+</head>
+
+<body>
+	<h1>People and Details</h1>
+	<div ng-controller="mainCtrl">
+		<table>
+			<thead style="background-color: lightgray;">
+				<tr>
+					<td style="width: 30px;"></td>
+					<td>Name</td>
+					<td>Gender</td>
+				</tr>  
+			</thead>
+			<tbody>
+				<tr ng-repeat-start="person in people">
+					<td>
+					  <button ng-if="person.expanded" ng-click="person.expanded = false">-</button>
+					  <button ng-if="!person.expanded" ng-click="person.expanded = true">+</button>
+					</td>
+					<td>{{person.name}}</td>
+					<td>{{person.gender}}</td>
+				</tr>
+				<tr ng-if="person.expanded" ng-repeat-end="">
+					<td colspan="3">{{person.details}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>
