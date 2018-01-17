@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<!-- defina abaixo o cabecalho -->
+    <title></title>
+	<link rel="stylesheet" type="text/css" href="...css"/>
+    <script>
+		<!-- OBSERVACAO: INSTALAR O PLUGIN DO FIREFOX: VIDEO DOWNLOADHELPER -->
+		// exemplo de url: "http://www.example.com/?cv=SJVo80xeWnQ"
+		console.log(window.location.href);
+		var url = new URL(window.location.href);
+		var codVideo = url.searchParams.get("cv");
+		this.codVideo = codVideo;
+		console.log(this.codVideo);
+	</script>
+</head>
+<body>
+<object id="objYoutube" data="" width="560" height="315"></object>
+</body>
+<script>
+	var oytube = document.getElementById('objYoutube');
+	var preUrlYoutube = 'http://www.youtube.com/embed/';
+	var urlVideo = preUrlYoutube + this.codVideo;
+	console.log(urlVideo);
+	oytube.setAttribute('data', urlVideo);
+	//console.log(oytube.getAttribute('data'));
+</script>
+</html>
